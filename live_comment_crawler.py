@@ -2,6 +2,8 @@
 import re
 import requests
 from bs4 import BeautifulSoup
+import jieba
+import jieba.posseg as pseg
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
@@ -21,6 +23,17 @@ def bv2av(url):
         print(e)
         raise
 
+def parse_words(all_texts):
+    # res = pseg.cut("我爱北京天安门")
+    # for word, flag in res:
+    #     print(str(word))
+    words = []
+    for entry in all_texts:
+        parse_result = pseg.cut(entry)
+        for word, _ in parse_result:
+            words.append(str(word))
+    return words
+
 def main():
 
     av_id = bv2av('https://www.bilibili.com/video/BV1cC4y1a7xA')
@@ -38,7 +51,7 @@ def main():
     xml_soup = BeautifulSoup(content_text, 'xml')
     all_ds = xml_soup.find_all('d')
     all_live_comments = [item.text for item in all_ds]
-    print(all_live_comments)
+    parsed_words = parse_words(all_live_comments)
 
 if __name__ == "__main__":
     main()
