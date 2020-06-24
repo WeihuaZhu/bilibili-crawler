@@ -2,8 +2,11 @@
 import re
 import requests
 from bs4 import BeautifulSoup
-import jieba
 import jieba.posseg as pseg
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud,ImageColorGenerator
+from PIL import Image
+import numpy as np
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
@@ -34,6 +37,15 @@ def parse_words(all_texts):
             words.append(str(word))
     return words
 
+def generate_word_cloud(words):
+    text = "/".join(words)
+    print(text)
+    wordcloud = WordCloud(max_font_size=50, max_words=100, background_color="white", font_path='fonts/MSYH.TTC').generate(text)
+    plt.figure()
+    plt.imshow(wordcloud, interpolation="bilinear")
+    plt.axis("off")
+    plt.show()
+
 def main():
 
     av_id = bv2av('https://www.bilibili.com/video/BV1cC4y1a7xA')
@@ -52,6 +64,7 @@ def main():
     all_ds = xml_soup.find_all('d')
     all_live_comments = [item.text for item in all_ds]
     parsed_words = parse_words(all_live_comments)
+    generate_word_cloud(parsed_words)
 
 if __name__ == "__main__":
     main()
